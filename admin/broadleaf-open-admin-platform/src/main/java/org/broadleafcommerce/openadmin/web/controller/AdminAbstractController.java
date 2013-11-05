@@ -605,10 +605,16 @@ public abstract class AdminAbstractController extends BroadleafAbstractControlle
     protected PersistencePackageRequest getSectionPersistencePackageRequest(String sectionClassName, 
             MultiValueMap<String, String> requestParams) {
         FilterAndSortCriteria[] fascs = getCriteria(requestParams);
-        return getSectionPersistencePackageRequest(sectionClassName)
+        PersistencePackageRequest ppr = PersistencePackageRequest.standard()
+                .withCeilingEntityClassname(sectionClassName)
+                .withCustomCriteria(getSectionCustomCriteria())
                 .withFilterAndSortCriteria(fascs)
                 .withStartIndex(getStartIndex(requestParams))
                 .withMaxIndex(getMaxIndex(requestParams));
+
+        attachSectionSpecificInfo(ppr);
+
+        return ppr;
     }
     
 

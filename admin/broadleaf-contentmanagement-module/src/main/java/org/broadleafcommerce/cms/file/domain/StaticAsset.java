@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.file.domain;
 
 import org.broadleafcommerce.cms.field.type.StorageType;
@@ -157,46 +156,8 @@ public interface StaticAsset extends Serializable {
      */
     public void setStorageType(StorageType storageType);
 
-    /**
-     * @deprecated - not currently used
-     * @return
-     */
-    public Site getSite();
-
-    /**
-     * @deprecated - not currently used
-     * @param site
-     */
-    public void setSite(Site site);
-
-    public SandBox getOriginalSandBox();
-
-    public void setOriginalSandBox(SandBox originalSandBox);
-
     public AdminAuditable getAuditable();
 
     public void setAuditable(AdminAuditable auditable);
-
-    public Boolean getLockedFlag();
-
-    public void setLockedFlag(Boolean lockedFlag);
-
-    public Boolean getDeletedFlag();
-
-    public void setDeletedFlag(Boolean deletedFlag);
-
-    public Boolean getArchivedFlag();
-
-    public void setArchivedFlag(Boolean archivedFlag);
-
-    public Long getOriginalAssetId();
-
-    public void setOriginalAssetId(Long originalPageId);
-
-    public SandBox getSandbox();
-
-    public void setSandbox(SandBox sandbox);
-
-    public StaticAsset cloneEntity();
 
 }

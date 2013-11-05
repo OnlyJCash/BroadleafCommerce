@@ -16,6 +16,9 @@
 
 package org.broadleafcommerce.openadmin.web.rulebuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.broadleafcommerce.common.presentation.client.SupportedFieldType;
@@ -31,9 +34,6 @@ import org.broadleafcommerce.openadmin.web.rulebuilder.service.RuleBuilderFieldS
 import org.broadleafcommerce.openadmin.web.rulebuilder.statement.Expression;
 import org.broadleafcommerce.openadmin.web.rulebuilder.statement.PhraseTranslator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Utility class to convert an MVEL string into a DataWrapper object
  * which can then be serialized on your view.
@@ -44,7 +44,6 @@ public class MVELToDataWrapperTranslator {
 
     private static final Log LOG = LogFactory.getLog(MVELToDataWrapperTranslator.class);
 
-    //TODO remove dependency on Supported Field Type which has a dependency on SmartGWT
     protected GroupingTranslator groupingTranslator = new GroupingTranslator();
     protected PhraseTranslator phraseTranslator = new PhraseTranslator();
 

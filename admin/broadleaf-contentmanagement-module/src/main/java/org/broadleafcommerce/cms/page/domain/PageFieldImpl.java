@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.page.domain;
 
+import org.broadleafcommerce.common.extensibility.jpa.copy.DirectCopyTransform;
+import org.broadleafcommerce.common.extensibility.jpa.copy.DirectCopyTransformMember;
 import org.broadleafcommerce.common.presentation.AdminPresentation;
 import org.broadleafcommerce.openadmin.audit.AdminAuditable;
 import org.broadleafcommerce.openadmin.audit.AdminAuditableListener;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
@@ -43,6 +46,7 @@ import javax.persistence.Table;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "BLC_PAGE_FLD")
 @EntityListeners(value = { AdminAuditableListener.class })
+@DirectCopyTransform({@DirectCopyTransformMember(templateTokens = {"sandbox"}, skipOverlaps=true)})
 public class PageFieldImpl implements PageField {
 
     private static final long serialVersionUID = 1L;
@@ -66,10 +70,6 @@ public class PageFieldImpl implements PageField {
 
     @Column (name = "FLD_KEY")
     protected String fieldKey;
-
-    @ManyToOne(targetEntity = PageImpl.class)
-    @JoinColumn(name="PAGE_ID")
-    protected Page page;
 
     @Column (name = "VALUE")
     protected String stringValue;
@@ -97,16 +97,6 @@ public class PageFieldImpl implements PageField {
     @Override
     public void setFieldKey(String fieldKey) {
         this.fieldKey = fieldKey;
-    }
-
-    @Override
-    public Page getPage() {
-        return page;
-    }
-
-    @Override
-    public void setPage(Page page) {
-        this.page = page;
     }
 
     @Override
@@ -142,16 +132,6 @@ public class PageFieldImpl implements PageField {
     @Override
     public void setAuditable(AdminAuditable auditable) {
         this.auditable = auditable;
-    }
-
-    @Override
-    public PageField cloneEntity() {
-        PageFieldImpl newPageField = new PageFieldImpl();
-        newPageField.fieldKey = fieldKey;
-        newPageField.page = page;
-        newPageField.lobValue = lobValue;
-        newPageField.stringValue = stringValue;
-        return newPageField;
     }
 }
 

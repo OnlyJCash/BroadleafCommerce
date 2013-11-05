@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.page.domain;
 
-import org.broadleafcommerce.openadmin.audit.AdminAuditable;
-
 import java.io.Serializable;
+
+import org.broadleafcommerce.openadmin.audit.AdminAuditable;
 
 /**
  * Created by bpolster.
@@ -33,15 +32,9 @@ public interface PageField extends Serializable {
 
     public void setFieldKey(String fieldKey);
 
-    public Page getPage();
-
-    public void setPage(Page page);
-
     public String getValue();
 
     public void setValue(String value);
-
-    public PageField cloneEntity();
 
     public AdminAuditable getAuditable();
 

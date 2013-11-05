@@ -21,6 +21,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
+import org.broadleafcommerce.common.web.BroadleafRequestContext;
 import org.broadleafcommerce.openadmin.dto.FieldMetadata;
 import org.broadleafcommerce.openadmin.dto.Property;
 import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.FilterMapping;
@@ -29,6 +30,7 @@ import org.broadleafcommerce.openadmin.server.service.persistence.module.provide
 import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.ExtractValueRequest;
 import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.PopulateValueRequest;
 import org.broadleafcommerce.openadmin.server.service.type.FieldProviderResponse;
+import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 
 /**
@@ -77,5 +79,13 @@ public class FieldPersistenceProviderAdapter extends AbstractFieldPersistencePro
             dirty = value == null || !value.equals(checkValue);
         }
         return dirty;
+    }
+
+    protected void setNonDisplayableValues(PopulateValueRequest request) {
+        BroadleafRequestContext context = BroadleafRequestContext.getBroadleafRequestContext();
+        MessageSource messages = context.getMessageSource();
+        String label = "(" + messages.getMessage("Workflow_not_displayable", null, "Not Displayable", context.getJavaLocale()) + ")";
+        request.getProperty().setDisplayValue(label);
+        request.getProperty().setOriginalDisplayValue(label);
     }
 }

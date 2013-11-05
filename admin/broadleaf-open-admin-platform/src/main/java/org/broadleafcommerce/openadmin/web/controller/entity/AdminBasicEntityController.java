@@ -16,6 +16,18 @@
 
 package org.broadleafcommerce.openadmin.web.controller.entity;
 
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.broadleafcommerce.common.exception.SecurityServiceException;
 import org.broadleafcommerce.common.exception.ServiceException;
@@ -47,6 +59,7 @@ import org.broadleafcommerce.openadmin.web.form.entity.DefaultMainActions;
 import org.broadleafcommerce.openadmin.web.form.entity.EntityForm;
 import org.broadleafcommerce.openadmin.web.form.entity.EntityFormAction;
 import org.broadleafcommerce.openadmin.web.form.entity.Field;
+import org.broadleafcommerce.openadmin.web.form.entity.Tab;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
@@ -63,17 +76,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * The default implementation of the {@link #BroadleafAdminAbstractEntityController}. This delegates every call to 
  * super and does not provide any custom-tailored functionality. It is responsible for rendering the admin for every
@@ -84,7 +86,10 @@ import javax.servlet.http.HttpServletResponse;
 @Controller("blAdminBasicEntityController")
 @RequestMapping("/{sectionKey:.+}")
 public class AdminBasicEntityController extends AdminAbstractController {
-    
+
+    @Resource(name="blSandBoxHelper")
+    SandBoxHelper sandBoxHelper;
+
     // ******************************************
     // REQUEST-MAPPING BOUND CONTROLLER METHODS *
     // ******************************************
@@ -309,6 +314,14 @@ public class AdminBasicEntityController extends AdminAbstractController {
         model.addAttribute("currentUrl", request.getRequestURL().toString());
 
         setModelAttributes(model, sectionKey);
+
+        if (sandBoxHelper.isSandBoxable(sectionClassName)) {
+            Tab auditTab = new Tab();
+            auditTab.setTitle("Audit");
+            auditTab.setOrder(Integer.MAX_VALUE);
+            auditTab.setTabClass("audit-tab");
+            entityForm.getTabs().add(auditTab);
+        }
 
         boolean readable = false;
         for (Property property : cmd.getProperties()) {

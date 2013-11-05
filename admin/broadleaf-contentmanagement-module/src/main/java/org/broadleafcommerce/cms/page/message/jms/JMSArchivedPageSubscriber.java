@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.page.message.jms;
-
-import org.broadleafcommerce.cms.page.service.PageService;
 
 import javax.annotation.Resource;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+
+import org.broadleafcommerce.cms.page.service.PageService;
 
 /**
  * Receives JMS message with a String that indicates the cache key
@@ -44,7 +43,6 @@ public class JMSArchivedPageSubscriber implements MessageListener {
         String basePageCacheKey = null;
         try {
             basePageCacheKey = ((TextMessage) message).getText();
-            pageService.removePageFromCache(basePageCacheKey);
         } catch (JMSException e) {
             throw new RuntimeException(e);
         }

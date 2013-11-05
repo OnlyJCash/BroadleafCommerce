@@ -16,6 +16,16 @@
 
 package org.broadleafcommerce.openadmin.web.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
@@ -68,16 +78,6 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.Resource;
 
 /**
  * @author Andre Azzolini (apazzolini)
@@ -723,13 +723,15 @@ public class FormBuilderServiceImpl implements FormBuilderService {
                 continue;
             }
 
-            DynamicResultSet subCollectionEntities = collectionRecords.get(p.getName());
-            String containingEntityId = entity.getPMap().get(ef.getIdProperty()).getValue();
-            ListGrid listGrid = buildCollectionListGrid(containingEntityId, subCollectionEntities, p, ef.getSectionKey());
-            listGrid.setListGridType(ListGrid.Type.INLINE);
+            if (collectionRecords != null) {
+                DynamicResultSet subCollectionEntities = collectionRecords.get(p.getName());
+                String containingEntityId = entity.getPMap().get(ef.getIdProperty()).getValue();
+                ListGrid listGrid = buildCollectionListGrid(containingEntityId, subCollectionEntities, p, ef.getSectionKey());
+                listGrid.setListGridType(ListGrid.Type.INLINE);
 
-            CollectionMetadata md = ((CollectionMetadata) p.getMetadata());
-            ef.addListGrid(listGrid, md.getTab(), md.getTabOrder());
+                CollectionMetadata md = ((CollectionMetadata) p.getMetadata());
+                ef.addListGrid(listGrid, md.getTab(), md.getTabOrder());
+            }
         }
         
         for (ListGrid lg : ef.getAllListGrids()) {

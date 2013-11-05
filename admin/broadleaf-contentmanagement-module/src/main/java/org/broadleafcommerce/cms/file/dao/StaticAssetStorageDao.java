@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.file.dao;
-
-import org.broadleafcommerce.cms.file.domain.StaticAssetStorage;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Blob;
+
+import org.broadleafcommerce.cms.file.domain.StaticAssetStorage;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Created by IntelliJ IDEA.

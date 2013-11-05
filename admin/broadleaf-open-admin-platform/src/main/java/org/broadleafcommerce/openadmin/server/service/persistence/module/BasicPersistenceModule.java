@@ -16,60 +16,6 @@
 
 package org.broadleafcommerce.openadmin.server.service.persistence.module;
 
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.broadleafcommerce.common.admin.domain.AdminMainEntity;
-import org.broadleafcommerce.common.exception.SecurityServiceException;
-import org.broadleafcommerce.common.exception.ServiceException;
-import org.broadleafcommerce.common.money.Money;
-import org.broadleafcommerce.common.persistence.Status;
-import org.broadleafcommerce.common.presentation.client.OperationType;
-import org.broadleafcommerce.common.presentation.client.PersistencePerspectiveItemType;
-import org.broadleafcommerce.common.presentation.client.SupportedFieldType;
-import org.broadleafcommerce.common.presentation.client.VisibilityEnum;
-import org.broadleafcommerce.common.util.FormatUtil;
-import org.broadleafcommerce.openadmin.dto.BasicFieldMetadata;
-import org.broadleafcommerce.openadmin.dto.CriteriaTransferObject;
-import org.broadleafcommerce.openadmin.dto.DynamicResultSet;
-import org.broadleafcommerce.openadmin.dto.Entity;
-import org.broadleafcommerce.openadmin.dto.EntityResult;
-import org.broadleafcommerce.openadmin.dto.FieldMetadata;
-import org.broadleafcommerce.openadmin.dto.ForeignKey;
-import org.broadleafcommerce.openadmin.dto.MergedPropertyType;
-import org.broadleafcommerce.openadmin.dto.PersistencePackage;
-import org.broadleafcommerce.openadmin.dto.PersistencePerspective;
-import org.broadleafcommerce.openadmin.dto.Property;
-import org.broadleafcommerce.openadmin.server.service.ValidationException;
-import org.broadleafcommerce.openadmin.server.service.persistence.PersistenceException;
-import org.broadleafcommerce.openadmin.server.service.persistence.PersistenceManager;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.CriteriaTranslator;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.FieldPath;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.FieldPathBuilder;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.FilterMapping;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.Restriction;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.RestrictionFactory;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.predicate.PredicateProvider;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.FieldPersistenceProvider;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.AddFilterPropertiesRequest;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.AddSearchMappingRequest;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.ExtractValueRequest;
-import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.PopulateValueRequest;
-import org.broadleafcommerce.openadmin.server.service.persistence.validation.EntityValidatorService;
-import org.broadleafcommerce.openadmin.server.service.persistence.validation.PopulateValueRequestValidator;
-import org.broadleafcommerce.openadmin.server.service.persistence.validation.PropertyValidationResult;
-import org.broadleafcommerce.openadmin.server.service.type.FieldProviderResponse;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -94,10 +40,55 @@ import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.broadleafcommerce.common.admin.domain.AdminMainEntity;
+import org.broadleafcommerce.common.exception.SecurityServiceException;
+import org.broadleafcommerce.common.exception.ServiceException;
+import org.broadleafcommerce.common.money.Money;
+import org.broadleafcommerce.common.presentation.client.OperationType;
+import org.broadleafcommerce.common.presentation.client.PersistencePerspectiveItemType;
+import org.broadleafcommerce.common.presentation.client.SupportedFieldType;
+import org.broadleafcommerce.common.presentation.client.VisibilityEnum;
+import org.broadleafcommerce.common.util.FormatUtil;
+import org.broadleafcommerce.openadmin.dto.BasicFieldMetadata;
+import org.broadleafcommerce.openadmin.dto.CriteriaTransferObject;
+import org.broadleafcommerce.openadmin.dto.DynamicResultSet;
+import org.broadleafcommerce.openadmin.dto.Entity;
+import org.broadleafcommerce.openadmin.dto.EntityResult;
+import org.broadleafcommerce.openadmin.dto.FieldMetadata;
+import org.broadleafcommerce.openadmin.dto.ForeignKey;
+import org.broadleafcommerce.openadmin.dto.MergedPropertyType;
+import org.broadleafcommerce.openadmin.dto.PersistencePackage;
+import org.broadleafcommerce.openadmin.dto.PersistencePerspective;
+import org.broadleafcommerce.openadmin.dto.Property;
+import org.broadleafcommerce.openadmin.server.service.ValidationException;
+import org.broadleafcommerce.openadmin.server.service.persistence.PersistenceException;
+import org.broadleafcommerce.openadmin.server.service.persistence.PersistenceManager;
+import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.CriteriaTranslator;
+import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.FilterMapping;
+import org.broadleafcommerce.openadmin.server.service.persistence.module.criteria.RestrictionFactory;
+import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.FieldPersistenceProvider;
+import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.AddFilterPropertiesRequest;
+import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.AddSearchMappingRequest;
+import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.ExtractValueRequest;
+import org.broadleafcommerce.openadmin.server.service.persistence.module.provider.request.PopulateValueRequest;
+import org.broadleafcommerce.openadmin.server.service.persistence.validation.EntityValidatorService;
+import org.broadleafcommerce.openadmin.server.service.persistence.validation.PopulateValueRequestValidator;
+import org.broadleafcommerce.openadmin.server.service.persistence.validation.PropertyValidationResult;
+import org.broadleafcommerce.openadmin.server.service.type.FieldProviderResponse;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 /**
  * @author jfischer
@@ -234,7 +225,7 @@ public class BasicPersistenceModule implements PersistenceModule, RecordHelper, 
             for (Property property : entity.getProperties()) {
                 BasicFieldMetadata metadata = (BasicFieldMetadata) mergedProperties.get(property.getName());
                 Class<?> returnType;
-                if (!property.getName().contains(FieldManager.MAPFIELDSEPARATOR)) {
+                if (!property.getName().contains(FieldManager.MAPFIELDSEPARATOR) && !property.getName().startsWith("__")) {
                     Field field = fieldManager.getField(instance.getClass(), property.getName());
                     if (field == null) {
                         LOG.debug("Unable to find a bean property for the reported property: " + property.getName() + ". Ignoring property.");
@@ -954,17 +945,18 @@ public class BasicPersistenceModule implements PersistenceModule, RecordHelper, 
         }
     }
 
-    @Override
-    public DynamicResultSet fetch(PersistencePackage persistencePackage, CriteriaTransferObject cto) throws ServiceException {
-        Entity[] payload;
-        int totalRecords;
+    public Map<String, FieldMetadata> getMergedProperties(PersistencePackage persistencePackage,
+            CriteriaTransferObject cto) throws ServiceException {
+        PersistencePerspective persistencePerspective = persistencePackage.getPersistencePerspective();
         String ceilingEntityFullyQualifiedClassname = persistencePackage.getCeilingEntityFullyQualifiedClassname();
+
         if (StringUtils.isEmpty(persistencePackage.getFetchTypeFullyQualifiedClassname())) {
             persistencePackage.setFetchTypeFullyQualifiedClassname(ceilingEntityFullyQualifiedClassname);
         }
-        PersistencePerspective persistencePerspective = persistencePackage.getPersistencePerspective();
+
         try {
             Class<?>[] entities = persistenceManager.getDynamicEntityDao().getAllPolymorphicEntitiesFromCeiling(Class.forName(ceilingEntityFullyQualifiedClassname));
+
             Map<String, FieldMetadata> mergedProperties = persistenceManager.getDynamicEntityDao().getMergedProperties(
                 ceilingEntityFullyQualifiedClassname,
                 entities,
@@ -978,6 +970,23 @@ public class BasicPersistenceModule implements PersistenceModule, RecordHelper, 
                 persistencePerspective.getConfigurationKey(),
                 ""
             );
+
+            return mergedProperties;
+        } catch (Exception e) {
+            throw new ServiceException("Unable to fetch results for " + ceilingEntityFullyQualifiedClassname, e);
+        }
+    }
+
+    @Override
+    public DynamicResultSet fetch(PersistencePackage persistencePackage, CriteriaTransferObject cto) throws ServiceException {
+        Entity[] payload;
+        int totalRecords;
+        PersistencePerspective persistencePerspective = persistencePackage.getPersistencePerspective();
+        String ceilingEntityFullyQualifiedClassname = persistencePackage.getCeilingEntityFullyQualifiedClassname();
+
+        try {
+            Map<String, FieldMetadata> mergedProperties = getMergedProperties(persistencePackage, cto);
+
             List<FilterMapping> filterMappings = getFilterMappings(persistencePerspective, cto, persistencePackage
                     .getFetchTypeFullyQualifiedClassname(), mergedProperties);
             
@@ -985,35 +994,9 @@ public class BasicPersistenceModule implements PersistenceModule, RecordHelper, 
                 filterMappings.addAll(cto.getAdditionalFilterMappings());
             }
 
-            boolean isArchivable = false;
-            for (Class<?> entity : entities) {
-                if (Status.class.isAssignableFrom(entity)) {
-                    isArchivable = true;
-                    break;
-                }
-            }
-            if (isArchivable && !persistencePerspective.getShowArchivedFields()) {
-                FilterMapping filterMapping = new FilterMapping()
-                    .withFieldPath(new FieldPath().withTargetProperty("archiveStatus.archived"))
-                    .withDirectFilterValues(new EmptyFilterValues())
-                    .withRestriction(new Restriction()
-                            .withPredicateProvider(new PredicateProvider<Character, Character>() {
-                                @Override
-                                public Predicate buildPredicate(CriteriaBuilder builder,
-                                                                FieldPathBuilder fieldPathBuilder,
-                                                                From root, String ceilingEntity,
-                                                                String fullPropertyName, Path<Character> explicitPath,
-                                                                List<Character> directValues) {
-                                    return builder.or(builder.equal(explicitPath, 'N'), builder.isNull(explicitPath));
-                                }
-                            })
-                    );
-                filterMappings.add(filterMapping);
-            }
             List<Serializable> records = getPersistentRecords(persistencePackage.getFetchTypeFullyQualifiedClassname(), filterMappings, cto.getFirstResult(), cto.getMaxResults());
             payload = getRecords(mergedProperties, records, null, null);
             totalRecords = getTotalRecords(persistencePackage.getFetchTypeFullyQualifiedClassname(), filterMappings);
-
         } catch (Exception e) {
             throw new ServiceException("Unable to fetch results for " + ceilingEntityFullyQualifiedClassname, e);
         }
@@ -1025,6 +1008,12 @@ public class BasicPersistenceModule implements PersistenceModule, RecordHelper, 
     public Integer getTotalRecords(String ceilingEntity, List<FilterMapping> filterMappings) {
         return ((Long) criteriaTranslator.translateCountQuery(persistenceManager.getDynamicEntityDao(),
                 ceilingEntity, filterMappings).getSingleResult()).intValue();
+    }
+
+    @Override
+    public Serializable getMaxValue(String ceilingEntity, List<FilterMapping> filterMappings, String maxField) {
+        return criteriaTranslator.translateMaxQuery(persistenceManager.getDynamicEntityDao(),
+                        ceilingEntity, filterMappings, maxField).getSingleResult();
     }
 
     @Override
@@ -1097,4 +1086,5 @@ public class BasicPersistenceModule implements PersistenceModule, RecordHelper, 
     public PersistenceManager getPersistenceManager() {
         return persistenceManager;
     }
+
 }

@@ -21,13 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.broadleafcommerce.common.RequestDTOImpl;
 import org.broadleafcommerce.openadmin.dto.PersistencePackage;
 
-/**
- * Created by IntelliJ IDEA.
- * User: jfischer
- * Date: 8/23/11
- * Time: 1:56 PM
- * To change this template use File | Settings | File Templates.
- */
 public class RequestDTOCustomPersistenceHandler extends TimeDTOCustomPersistenceHandler {
 
     private static final Log LOG = LogFactory.getLog(RequestDTOCustomPersistenceHandler.class);

@@ -16,9 +16,9 @@
 
 package org.broadleafcommerce.openadmin.server.security.domain;
 
-import org.broadleafcommerce.common.sandbox.domain.SandBox;
-
 import java.util.Set;
+
+import org.broadleafcommerce.common.sandbox.domain.SandBox;
 
 /**
  * 
@@ -92,5 +92,5 @@ public interface AdminUser extends AdminSecurityContext {
 
     public Set<AdminPermission> getAllPermissions();
     public void setAllPermissions(Set<AdminPermission> allPermissions);
-    public AdminUser clone();
+    //public AdminUser clone();
 }

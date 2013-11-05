@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.field.domain;
 
+import org.broadleafcommerce.common.extensibility.jpa.clone.ClonePolicyCollection;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -23,6 +23,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -71,7 +72,8 @@ public class FieldGroupImpl implements FieldGroup {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region="blCMSElements")
     @OrderBy("fieldOrder")
     @BatchSize(size = 20)
-    protected List<FieldDefinition> fieldDefinitions;
+    @ClonePolicyCollection(deepClone = false)
+    protected List<FieldDefinition> fieldDefinitions = new ArrayList<FieldDefinition>();
 
     @Override
     public Long getId() {

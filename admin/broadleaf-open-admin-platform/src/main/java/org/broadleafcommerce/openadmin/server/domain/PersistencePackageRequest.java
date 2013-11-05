@@ -16,6 +16,12 @@
 
 package org.broadleafcommerce.openadmin.server.domain;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.broadleafcommerce.common.presentation.client.PersistencePerspectiveItemType;
@@ -32,12 +38,6 @@ import org.broadleafcommerce.openadmin.dto.MapMetadata;
 import org.broadleafcommerce.openadmin.dto.MapStructure;
 import org.broadleafcommerce.openadmin.dto.OperationTypes;
 import org.broadleafcommerce.openadmin.dto.visitor.MetadataVisitor;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A DTO class used to seed a persistence package.
@@ -407,14 +407,6 @@ public class PersistencePackageRequest {
         this.maxIndex = maxIndex;
     }
 
-    public Map<String, PersistencePackageRequest> getSubRequests() {
-        return subRequests;
-    }
-
-    public void setSubRequests(Map<String, PersistencePackageRequest> subRequests) {
-        this.subRequests = subRequests;
-    }
-
     public String getSectionEntityClassname() {
         return sectionEntityClassname;
     }
@@ -446,7 +438,14 @@ public class PersistencePackageRequest {
     public void setRequestingEntityName(String requestingEntityName) {
         this.requestingEntityName = requestingEntityName;
     }
-    
+
+    public Map<String, PersistencePackageRequest> getSubRequests() {
+        return subRequests;
+    }
+
+    public void setSubRequests(Map<String, PersistencePackageRequest> subRequests) {
+        this.subRequests = subRequests;
+    }
     public boolean isValidateUnsubmittedProperties() {
         return validateUnsubmittedProperties;
     }

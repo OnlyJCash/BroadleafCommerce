@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.file.service;
 
 import org.broadleafcommerce.cms.file.domain.StaticAsset;
@@ -102,7 +101,7 @@ public interface StaticAssetStorageService {
      */
     String generateStorageFileName(StaticAsset staticAsset, boolean useSharedPath);
 
-    Map<String, String> getCacheFileModel(String fullUrl, SandBox sandBox, Map<String, String> parameterMap) throws Exception;
+    Map<String, String> getCacheFileModel(String fullUrl, Map<String, String> parameterMap) throws Exception;
 
     /**
      * Persists the file being based in according to the staticAsset's StorageType.

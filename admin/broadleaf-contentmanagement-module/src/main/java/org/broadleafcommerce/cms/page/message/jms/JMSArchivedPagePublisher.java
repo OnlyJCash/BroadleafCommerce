@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.page.message.jms;
-
-import org.broadleafcommerce.cms.page.domain.Page;
-import org.broadleafcommerce.cms.page.message.ArchivedPagePublisher;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
+
+import org.broadleafcommerce.cms.page.domain.Page;
+import org.broadleafcommerce.cms.page.message.ArchivedPagePublisher;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 /**
  * JMS implementation of ArchivedPagePublisher.

@@ -16,9 +16,9 @@
 
 package org.broadleafcommerce.cms.url.dao;
 
-import org.broadleafcommerce.cms.url.domain.URLHandler;
-
 import java.util.List;
+
+import org.broadleafcommerce.cms.url.domain.URLHandler;
 
 
 /**
@@ -27,14 +27,16 @@ import java.util.List;
 public interface URLHandlerDao {
 
 
-    public URLHandler findURLHandlerByURI(String uri);
+    URLHandler findURLHandlerByURI(String uri);
     
     /**
      * Gets all the URL handlers configured in the system
      * @return
      */
-    public List<URLHandler> findAllURLHandlers();
+    List<URLHandler> findAllURLHandlers();
 
-    public URLHandler saveURLHandler(URLHandler handler);
+    URLHandler saveURLHandler(URLHandler handler);
+
+    URLHandler findURLHandlerById(Long id);
 
 }

@@ -19,6 +19,7 @@ package org.broadleafcommerce.cms.url.dao;
 import org.broadleafcommerce.cms.url.domain.URLHandler;
 import org.broadleafcommerce.cms.url.domain.URLHandlerImpl;
 import org.broadleafcommerce.common.persistence.EntityConfiguration;
+import org.hibernate.ejb.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -47,17 +49,21 @@ public class URlHandlerDaoImpl implements URLHandlerDao {
 
     @Override
     public URLHandler findURLHandlerByURI(String uri) {
-        Query query;
-        query = em.createNamedQuery("BC_READ_OUTGOING_URL");
+        TypedQuery<URLHandler> query = em.createNamedQuery("BC_READ_OUTGOING_URL", URLHandler.class);
         query.setParameter("incomingURL", uri);
+        query.setHint(QueryHints.HINT_CACHEABLE, true);
 
-        @SuppressWarnings("unchecked")
         List<URLHandler> results = query.getResultList();
         if (results != null && !results.isEmpty()) {
             return results.get(0);
         } else {
             return null;
         }
+    }
+
+    @Override
+    public URLHandler findURLHandlerById(Long id) {
+        return em.find(URLHandlerImpl.class, id);
     }
     
     @Override

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.broadleafcommerce.cms.file.domain;
 
 import org.broadleafcommerce.common.presentation.AdminPresentation;
@@ -72,28 +71,4 @@ public class ImageStaticAssetImpl extends StaticAssetImpl implements ImageStatic
         this.height = height;
     }
 
-    @Override
-    public ImageStaticAsset cloneEntity() {
-
-        ImageStaticAssetImpl asset = new ImageStaticAssetImpl();
-        asset.name = name;
-        asset.site = site;
-        asset.archivedFlag = archivedFlag;
-        asset.deletedFlag = deletedFlag;
-        asset.fullUrl = fullUrl;
-        asset.fileSize = fileSize;
-        asset.mimeType = mimeType;
-        asset.sandbox = sandbox;
-        asset.originalAssetId = originalAssetId;
-        asset.width = width;
-        asset.height = height;
-
-        for (String key : contentMessageValues.keySet()) {
-            StaticAssetDescription oldAssetDescription = contentMessageValues.get(key);
-            StaticAssetDescription newAssetDescription = oldAssetDescription.cloneEntity();
-            asset.getContentMessageValues().put(key, newAssetDescription);
-        }
-
-        return asset;
-    }
 }

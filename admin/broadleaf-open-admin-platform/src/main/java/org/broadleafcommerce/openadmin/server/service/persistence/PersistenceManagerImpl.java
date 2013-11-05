@@ -16,7 +16,21 @@
 
 package org.broadleafcommerce.openadmin.server.service.persistence;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.logging.Log;
@@ -53,19 +67,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
 
 @Component("blPersistenceManager")
 @Scope("prototype")
@@ -128,6 +129,9 @@ public class PersistenceManagerImpl implements InspectHelper, PersistenceManager
     @Override
     public Class<?>[] getUpDownInheritance(Class<?> testClass) {
         Class<?>[] pEntities = dynamicEntityDao.getAllPolymorphicEntitiesFromCeiling(testClass);
+        if (ArrayUtils.isEmpty(pEntities)) {
+            return pEntities;
+        }
         Class<?> topConcreteClass = pEntities[pEntities.length - 1];
         List<Class<?>> temp = new ArrayList<Class<?>>(pEntities.length);
         temp.addAll(Arrays.asList(pEntities));
@@ -398,7 +402,7 @@ public class PersistenceManagerImpl implements InspectHelper, PersistenceManager
             for (Map.Entry<String,PersistencePackage> subPackage : persistencePackage.getSubPackages().entrySet()) {
                 Entity subResponse;
                 try {
-                    subPackage.getValue().setCustomCriteria(new String[]{subPackage.getValue().getCustomCriteria()[0], idVal});
+                    subPackage.getValue().getCustomCriteria()[1] = idVal;
                     //Run through any subPackages -- add up any validation errors
                     checkHandler: {
                         for (CustomPersistenceHandler handler : getCustomPersistenceHandlers()) {

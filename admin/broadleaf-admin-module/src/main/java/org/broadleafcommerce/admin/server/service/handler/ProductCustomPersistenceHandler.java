@@ -78,14 +78,6 @@ public class ProductCustomPersistenceHandler extends CustomPersistenceHandlerAda
            
             adminInstance = (Product) dynamicEntityDao.merge(adminInstance);
 
-            CategoryProductXref categoryXref = new CategoryProductXrefImpl();
-            categoryXref.setCategory(adminInstance.getDefaultCategory());
-            categoryXref.setProduct(adminInstance);
-            if (adminInstance.getDefaultCategory() != null && !adminInstance.getAllParentCategoryXrefs().contains(categoryXref)) {
-                categoryXref = (CategoryProductXref) dynamicEntityDao.merge(categoryXref);
-                adminInstance.getAllParentCategoryXrefs().add(categoryXref);
-            }
-            
             //Since none of the Sku fields are required, it's possible that the user did not fill out
             //any Sku fields, and thus a Sku would not be created. Product still needs a default Sku so instantiate one
             if (adminInstance.getDefaultSku() == null) {
@@ -120,13 +112,6 @@ public class ProductCustomPersistenceHandler extends CustomPersistenceHandlerAda
             adminInstance = (Product) helper.createPopulatedInstance(adminInstance, entity, adminProperties, false);
            
             adminInstance = (Product) dynamicEntityDao.merge(adminInstance);
-
-            CategoryProductXref categoryXref = new CategoryProductXrefImpl();
-            categoryXref.setCategory(adminInstance.getDefaultCategory());
-            categoryXref.setProduct(adminInstance);
-            if (adminInstance.getDefaultCategory() != null && !adminInstance.getAllParentCategoryXrefs().contains(categoryXref)) {
-                adminInstance.getAllParentCategoryXrefs().add(categoryXref);
-            }
             
             return helper.getRecord(adminProperties, adminInstance, null, null);
         } catch (Exception e) {

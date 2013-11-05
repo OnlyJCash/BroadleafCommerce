@@ -16,6 +16,19 @@
 
 package org.broadleafcommerce.openadmin.server.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+
 import org.apache.commons.lang3.StringUtils;
 import org.broadleafcommerce.common.admin.domain.AdminMainEntity;
 import org.broadleafcommerce.common.exception.ServiceException;
@@ -48,19 +61,6 @@ import org.broadleafcommerce.openadmin.web.form.entity.Field;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.Resource;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
 /**
  * @author Andre Azzolini (apazzolini)
@@ -120,7 +120,11 @@ public class AdminEntityServiceImpl implements AdminEntityService {
         // based on the criteria specific in the PersistencePackage.
         for (Entry<String, EntityForm> entry : entityForm.getDynamicForms().entrySet()) {
             DynamicEntityFormInfo info = entityForm.getDynamicFormInfo(entry.getKey());
-            customCriteria = new String[] {info.getCriteriaName()};
+
+            String propertyName = info.getPropertyName();
+            String propertyValue = entityForm.getFields().get(propertyName).getValue();
+            customCriteria = new String[] {info.getCriteriaName(), entityForm.getId(), propertyName, propertyValue};
+
             PersistencePackageRequest subRequest = getRequestForEntityForm(entry.getValue(), customCriteria);
             ppr.addSubRequest(info.getPropertyName(), subRequest);
         }
@@ -130,12 +134,17 @@ public class AdminEntityServiceImpl implements AdminEntityService {
     @Override
     public PersistenceResponse updateEntity(EntityForm entityForm, String[] customCriteria) throws ServiceException {
         PersistencePackageRequest ppr = getRequestForEntityForm(entityForm, customCriteria);
+        ppr.setRequestingEntityName(entityForm.getMainEntityName());
         // If the entity form has dynamic forms inside of it, we need to persist those as well.
         // They are typically done in their own custom persistence handlers, which will get triggered
         // based on the criteria specific in the PersistencePackage.
         for (Entry<String, EntityForm> entry : entityForm.getDynamicForms().entrySet()) {
             DynamicEntityFormInfo info = entityForm.getDynamicFormInfo(entry.getKey());
-            customCriteria = new String[] { info.getCriteriaName(), entityForm.getId() };
+
+            String propertyName = info.getPropertyName();
+            String propertyValue = entityForm.getFields().get(propertyName).getValue();
+            customCriteria = new String[] { info.getCriteriaName(), entityForm.getId(), propertyName, propertyValue };
+
             PersistencePackageRequest subRequest = getRequestForEntityForm(entry.getValue(), customCriteria);
             ppr.addSubRequest(info.getPropertyName(), subRequest);
         }
@@ -156,6 +165,7 @@ public class AdminEntityServiceImpl implements AdminEntityService {
             Property p = new Property();
             p.setName(entry.getKey());
             p.setValue(entry.getValue().getValue());
+            p.setDisplayValue(entry.getValue().getDisplayValue());
             properties.add(p);
         }
         
@@ -272,11 +282,14 @@ public class AdminEntityServiceImpl implements AdminEntityService {
         FilterAndSortCriteria fasc;
 
         FieldMetadata md = collectionProperty.getMetadata();
+        String collectionCeilingClass = null;
 
         if (md instanceof BasicCollectionMetadata) {
             fasc = new FilterAndSortCriteria(ppr.getForeignKey().getManyToField());
+            collectionCeilingClass = ((CollectionMetadata) md).getCollectionCeilingEntity();
         } else if (md instanceof AdornedTargetCollectionMetadata) {
             fasc = new FilterAndSortCriteria(ppr.getAdornedList().getCollectionFieldName());
+            collectionCeilingClass = ((CollectionMetadata) md).getCollectionCeilingEntity();
         } else if (md instanceof MapMetadata) {
             fasc = new FilterAndSortCriteria(ppr.getForeignKey().getManyToField());
         } else {
@@ -292,6 +305,12 @@ public class AdminEntityServiceImpl implements AdminEntityService {
         }
         fasc.setFilterValue(id);
         ppr.addFilterAndSortCriteria(fasc);
+
+        if (collectionCeilingClass != null) {
+            ppr.setCeilingEntityClassname(collectionCeilingClass);
+        }
+        ppr.setSectionEntityClassname(containingClassMetadata.getCeilingType());
+        ppr.setSectionEntityField(collectionProperty.getName());
 
         return fetch(ppr);
     }
@@ -437,15 +456,24 @@ public class AdminEntityServiceImpl implements AdminEntityService {
             Property fp = new Property();
             fp.setName(ppr.getForeignKey().getManyToField());
             fp.setValue(getContextSpecificRelationshipId(mainMetadata, parentEntity, field.getName()));
+            ppr.setSectionEntityIdValue(getContextSpecificRelationshipId(mainMetadata, parentEntity, field.getName()));
             properties.add(fp);
         } else if (md instanceof AdornedTargetCollectionMetadata) {
             ppr.getEntity().setType(new String[] { ppr.getAdornedList().getAdornedTargetEntityClassname() });
+            for (Property property : properties) {
+                if (property.getName().equals(ppr.getAdornedList().getLinkedObjectPath() +
+                                    "." + ppr.getAdornedList().getLinkedIdProperty())) {
+                    ppr.setSectionEntityIdValue(property.getValue());
+                    break;
+                }
+            }
         } else if (md instanceof MapMetadata) {
             ppr.getEntity().setType(new String[] { entityForm.getEntityType() });
             
             Property p = new Property();
             p.setName("symbolicId");
             p.setValue(getContextSpecificRelationshipId(mainMetadata, parentEntity, field.getName()));
+            ppr.setSectionEntityIdValue(getContextSpecificRelationshipId(mainMetadata, parentEntity, field.getName()));
             properties.add(p);
         } else {
             throw new IllegalArgumentException(String.format("The specified field [%s] for class [%s] was" +
@@ -469,7 +497,9 @@ public class AdminEntityServiceImpl implements AdminEntityService {
         Property p = new Property();
         p.setName(entityForm.getIdProperty());
         p.setValue(collectionItemId);
-        properties.add(p);
+        if (!properties.contains(p)) {
+            properties.add(p);
+        }
 
         Property[] propArr = new Property[properties.size()];
         properties.toArray(propArr);

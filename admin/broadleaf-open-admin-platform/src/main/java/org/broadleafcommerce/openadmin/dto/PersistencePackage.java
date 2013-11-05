@@ -16,12 +16,14 @@
 
 package org.broadleafcommerce.openadmin.dto;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.broadleafcommerce.common.presentation.client.PersistencePerspectiveItemType;
 
 public class PersistencePackage implements Serializable {
 
@@ -37,8 +39,8 @@ public class PersistencePackage implements Serializable {
     protected Entity entity;
     protected String csrfToken;
     protected Integer batchId;
-    protected Map<String, PersistencePackage> subPackages = new LinkedHashMap<String, PersistencePackage>();
     protected String requestingEntityName;
+    protected Map<String, PersistencePackage> subPackages = new LinkedHashMap<String, PersistencePackage>();
     protected boolean validateUnsubmittedProperties = true;
     
     public PersistencePackage(String ceilingEntityFullyQualifiedClassname, Entity entity, PersistencePerspective persistencePerspective, String[] customCriteria, String csrfToken) {
@@ -57,7 +59,22 @@ public class PersistencePackage implements Serializable {
     public PersistencePackage() {
         //do nothing
     }
-    
+
+    @Override
+    public Property findProperty(String name) {
+        return entity.findProperty(name);
+    }
+
+    @Override
+    public Property[] getProperties() {
+        return entity.getProperties();
+    }
+
+    @Override
+    public Map<String, Property> getPMap() {
+        return entity.getPMap();
+    }
+
     public String getCeilingEntityFullyQualifiedClassname() {
         return ceilingEntityFullyQualifiedClassname;
     }
@@ -135,14 +152,6 @@ public class PersistencePackage implements Serializable {
         this.batchId = batchId;
     }
 
-    public Map<String, PersistencePackage> getSubPackages() {
-        return subPackages;
-    }
-
-    public void setSubPackages(Map<String, PersistencePackage> subPackages) {
-        this.subPackages = subPackages;
-    }
-
     public String getSectionEntityClassname() {
         return sectionEntityClassname;
     }
@@ -173,6 +182,21 @@ public class PersistencePackage implements Serializable {
     
     public void setRequestingEntityName(String requestingEntityName) {
         this.requestingEntityName = requestingEntityName;
+    }
+
+    public Map<PersistencePerspectiveItemType, PersistencePerspectiveItem> getPersistencePerspectiveItems() {
+        if (persistencePerspective != null) {
+            return persistencePerspective.getPersistencePerspectiveItems();
+        }
+        return new HashMap<PersistencePerspectiveItemType, PersistencePerspectiveItem>();
+    }
+
+    public Map<String, PersistencePackage> getSubPackages() {
+        return subPackages;
+    }
+
+    public void setSubPackages(Map<String, PersistencePackage> subPackages) {
+        this.subPackages = subPackages;
     }
 
     public boolean isValidateUnsubmittedProperties() {
